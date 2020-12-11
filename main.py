@@ -41,7 +41,7 @@ def sdr_check():
 
 
 #configure osmocom, systemctl and asterisk
-def configure(gprs, sip, interface, config_path="/etc/osmocom"):
+def configure(gprs, sip, interface, config_path="/etc/osmocom2"):
     # stopping osmocom services, if they a running
     stop_services()
 
