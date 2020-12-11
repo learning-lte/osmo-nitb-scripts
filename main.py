@@ -26,7 +26,7 @@ def check_root():
     else:
         return True
 
-def sdr_check(device):
+def sdr_check():
     print("[*] Checking for " + device + " device..")
 
     ## IF LIMESDR
@@ -58,13 +58,15 @@ def sdr_check(device):
         exit(1)
 
 #configure osmocom, systemctl and asterisk
-def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
+def configure(gprs, sip, interface, config_path="/etc/osmocom"):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    global trxService
+    global trxConfig
     if(device == "LIME"):
         trxService = "osmo-trx-lms2.service"
         trxConfig = "osmo-trx-lms.cfg"
-    elif(device == "UHD"):    
-        trxService = "osmo-trx-uhd.service"
+    elif(device == "UHD"):
+        trxService = "osmo-trx.service"
         trxConfig = "osmo-trx-uhd.cfg"
     else:
         exit(1)
@@ -90,7 +92,7 @@ def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-ggsn.cfg", config_path+"/osmo-ggsn.cfg"), shell=True)
 
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-bts.cfg", config_path+"/osmo-bts-trx.cfg"), shell=True)
-    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-trx.cfg", config_path+"/"+trxConfig), shell=True)
+    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-trx.cfg", config_path + "/" + trxConfig), shell=True)
 
     if sip:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
@@ -118,17 +120,9 @@ def run(gprs, sip):
         check_errors(service=service)
 
 
-def stop_services(device, log=False):
-    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
-    if(device == "LIME"):
-        trxService = "osmo-trx-lms2.service"
-    elif(device == "UHD"):    
-        trxService = "osmo-trx-uhd.service"
-    else:
-        exit(1)
+def stop_services(log=False):
 
-    services = ["osmocom-nitb2.service",
-                "osmo-nitb2.service",
+    services = ["osmo-nitb2.service",
                 trxService,
                 "osmo-bts-trx2.service",
                 "osmo-pcu2.service",
@@ -148,7 +142,7 @@ def stop_services(device, log=False):
             subprocess.call(["systemctl", "stop", service])
 
 
-def check_errors(device, gprs=False, sip=False, service=False):
+def check_errors(gprs=False, sip=False, service=False):
     if not service:
         services = ["osmo-nitb2.service", trxService, "osmo-bts-trx2.service"]
         if gprs:
@@ -173,7 +167,7 @@ def check_errors(device, gprs=False, sip=False, service=False):
                     service,
                    "{0}:{1}:{2}".format(date.hour, date.minute, date.second))
                   )
-            stop_services(device)
+            stop_services()
             exit(1)
 
 
@@ -212,15 +206,17 @@ if __name__ == "__main__" and check_root():
     gprs = args.gprs
     interface = args.interface
     sip = args.sip
+    
+    global device
     device = args.device.upper()
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    sdr_check(device)
-    configure(gprs, device, sip, interface)
+    sdr_check()
+    configure(gprs, sip, interface)
 
     run(gprs, sip)
-    check_errors(device)
+    check_errors()
     db = HLR.Database(hlr_path)
     print("[+] Done")
     time.sleep(3)
