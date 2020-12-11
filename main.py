@@ -26,22 +26,47 @@ def check_root():
     else:
         return True
 
+def sdr_check(device):
+    print("[*] Checking for " + device + " device..")
 
-def sdr_check():
-    print("[*] Checking for SDR device..")
-    p = subprocess.Popen(['LimeUtil', '--find'], stdout=subprocess.PIPE)
-    output, err = p.communicate()
-    rc = p.returncode
+    ## IF LIMESDR
+    if(device == "LIME"):
+        p = subprocess.Popen(['LimeUtil', '--find'], stdout=subprocess.PIPE)
+        output, err = p.communicate()
+        rc = p.returncode
 
-    if b"LimeSDR" in output:
-        print("[+] Found device: " + output.decode())
+        if(b"LimeSDR" in output):
+            print("[+] Found device: " + output.decode())
+        else:
+            print("[-] Not devices found, exiting...")
+            exit(1)
+
+    ## IF UHD
+    elif(device == "UHD"):
+        p = subprocess.Popen(['uhd_find_devices'], stdout=subprocess.PIPE)
+        output, err = p.communicate()
+        rc = p.returncode
+
+        if(b"UHD Device" in output):
+            print("[+] Found device: " + output.decode())
+        else:
+            print("[-] Not devices found, exiting...")
+            exit(1)
+
     else:
-        print("[-] Not devices found, exiting...")
+        print("Device not found, exiting...")
         exit(1)
 
-
 #configure osmocom, systemctl and asterisk
-def configure(gprs, sip, interface, config_path="/etc/osmocom"):
+def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    if(device == "LIME"):
+        trxService = "osmo-trx-lms.service"
+    elif(device == "UHD"):    
+        trxService = "osmo-trx-lms.service"
+    else:
+        exit(1)
+
     # stopping osmocom services, if they a running
     stop_services()
 
@@ -78,7 +103,7 @@ def configure(gprs, sip, interface, config_path="/etc/osmocom"):
 
 
 def run(gprs, sip):
-    services = ["osmo-nitb.service", "osmo-trx-lms.service", "osmo-bts-trx.service"]
+    services = ["osmo-nitb.service", trxService, "osmo-bts-trx.service"]
     if gprs:
         services += ["osmo-pcu.service", "osmo-ggsn.service", "osmo-sgsn.service"]
     if sip:
@@ -94,7 +119,7 @@ def run(gprs, sip):
 def stop_services(log=False):
     services = ["osmocom-nitb.service",
                 "osmo-nitb.service",
-                "osmo-trx-lms.service",
+                trxService,
                 "osmo-bts-trx.service",
                 "osmo-pcu.service",
                 "osmo-ggsn.service",
@@ -115,7 +140,7 @@ def stop_services(log=False):
 
 def check_errors(gprs=False, sip=False, service=False):
     if not service:
-        services = ["osmo-nitb.service", "osmo-trx-lms.service", "osmo-bts-trx.service"]
+        services = ["osmo-nitb.service", trxService, "osmo-bts-trx.service"]
         if gprs:
             services += ["osmo-pcu.service", "osmo-ggsn.service", "osmo-sgsn.service"]
         if sip:
@@ -154,6 +179,9 @@ if __name__ == "__main__" and check_root():
                          action="store_true", dest="user_interaction", default=False,
                          help="Enable automaticaly interaction with all new users.")
 
+    parser.add_argument("-d", default="lime", dest="device",
+                        help="SDR Device: uhd or lime. (Default=lime)")
+
     parser.add_argument("-c", default="config.json", dest="config",
                         help="Config file for auto user interaction. (Default=config.json)")
 
@@ -174,11 +202,12 @@ if __name__ == "__main__" and check_root():
     gprs = args.gprs
     interface = args.interface
     sip = args.sip
+    device = args.device.upper()
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    sdr_check()
-    configure(gprs, sip, interface)
+    sdr_check(device)
+    configure(gprs, device, sip, interface)
 
     run(gprs, sip)
     check_errors()
