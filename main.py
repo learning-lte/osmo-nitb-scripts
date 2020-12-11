@@ -63,7 +63,7 @@ def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
     if(device == "LIME"):
         trxService = "osmo-trx-lms.service"
     elif(device == "UHD"):    
-        trxService = "osmo-trx-lms.service"
+        trxService = "osmo-trx-uhd.service"
     else:
         exit(1)
 
@@ -180,7 +180,7 @@ if __name__ == "__main__" and check_root():
                          help="Enable automaticaly interaction with all new users.")
 
     parser.add_argument("-d", default="lime", dest="device",
-                        help="SDR Device: uhd or lime. (Default=lime)")
+                        help="SDR Device: uhd, lime. (Default=lime)")
 
     parser.add_argument("-c", default="config.json", dest="config",
                         help="Config file for auto user interaction. (Default=config.json)")
