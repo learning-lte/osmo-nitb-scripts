@@ -1,5 +1,5 @@
 
-![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/help.png)
+![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/help_update.png)
 
 ### RougeBTS Fork For DragonOS
 
@@ -15,7 +15,7 @@ This project was forked from DrLafa to work specifically on the DragonOS distro.
   - SMS-spam >:D
 
 
-![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/RougeBTS.png)
+![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/RougeBTS_update.png)
 
 Software was tested on [LimeSDR-Mini + Orange Pi Zero](https://codeby.net/threads/miniatjurnaja-sotovaja-stancija-na-baze-limesdr-mini-i-orange-pi-zero.66747/) with Armbian Bionic and Debian 10. Forked version tested with USRP B210 on DragonOS. 
 
