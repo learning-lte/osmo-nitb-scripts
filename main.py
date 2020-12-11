@@ -62,8 +62,10 @@ def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     if(device == "LIME"):
         trxService = "osmo-trx-lms2.service"
+        trxConfig = "osmo-trx-lms.cfg"
     elif(device == "UHD"):    
         trxService = "osmo-trx-uhd.service"
+        trxConfig = "osmo-trx-uhd.cfg"
     else:
         exit(1)
 
@@ -88,7 +90,7 @@ def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-ggsn.cfg", config_path+"/osmo-ggsn.cfg"), shell=True)
 
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-bts.cfg", config_path+"/osmo-bts-trx.cfg"), shell=True)
-    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-trx.cfg", config_path+"/osmo-trx-lms.cfg"), shell=True)
+    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-trx.cfg", config_path+"/"+trxConfig), shell=True)
 
     if sip:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
