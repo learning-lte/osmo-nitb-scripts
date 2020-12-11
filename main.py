@@ -58,7 +58,7 @@ def sdr_check():
         exit(1)
 
 #configure osmocom, systemctl and asterisk
-def configure(gprs, sip, interface, config_path="/etc/osmocom"):
+def configure(gprs, sip, interface, config_path="/etc/osmocom2"):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     global trxService
     global trxConfig
