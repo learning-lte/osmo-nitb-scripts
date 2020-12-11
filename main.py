@@ -61,7 +61,7 @@ def sdr_check(device):
 def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     if(device == "LIME"):
-        trxService = "osmo-trx-lms.service"
+        trxService = "osmo-trx-lms2.service"
     elif(device == "UHD"):    
         trxService = "osmo-trx-uhd.service"
     else:
@@ -92,22 +92,22 @@ def configure(gprs, sip, device, interface, config_path="/etc/osmocom"):
 
     if sip:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
-        subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb_sip.service", "/lib/systemd/system/osmo-nitb.service"), shell=True)
+        subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb_sip2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/extensions.conf", "/etc/asterisk/extensions.conf"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/sip.conf", "/etc/asterisk/sip.conf"), shell=True)
     else:
-        subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb.service", "/lib/systemd/system/osmo-nitb.service"), shell=True)
+        subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
 
     subprocess.call("sysctl -w kernel.sched_rt_runtime_us=-1", shell=True)
     subprocess.call("systemctl daemon-reload", shell=True)
 
 
 def run(gprs, sip):
-    services = ["osmo-nitb.service", trxService, "osmo-bts-trx.service"]
+    services = ["osmo-nitb2.service", trxService, "osmo-bts-trx2.service"]
     if gprs:
-        services += ["osmo-pcu.service", "osmo-ggsn.service", "osmo-sgsn.service"]
+        services += ["osmo-pcu2.service", "osmo-ggsn2.service", "osmo-sgsn2.service"]
     if sip:
-        services += ["osmo-sip-connector", "asterisk"]
+        services += ["osmo-sip-connector2.service", "asterisk"]
 
     for service in services:
         print("[+] starting {0} ...".format(service))
@@ -119,20 +119,20 @@ def run(gprs, sip):
 def stop_services(device, log=False):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     if(device == "LIME"):
-        trxService = "osmo-trx-lms.service"
+        trxService = "osmo-trx-lms2.service"
     elif(device == "UHD"):    
         trxService = "osmo-trx-uhd.service"
     else:
         exit(1)
 
-    services = ["osmocom-nitb.service",
-                "osmo-nitb.service",
+    services = ["osmocom-nitb2.service",
+                "osmo-nitb2.service",
                 trxService,
-                "osmo-bts-trx.service",
-                "osmo-pcu.service",
-                "osmo-ggsn.service",
-                "osmo-sgsn.service",
-                "osmo-sip-connector",
+                "osmo-bts-trx2.service",
+                "osmo-pcu2.service",
+                "osmo-ggsn2.service",
+                "osmo-sgsn2.service",
+                "osmo-sip-connector2.service",
                 "asterisk"]
 
     for service in services:
@@ -148,11 +148,11 @@ def stop_services(device, log=False):
 
 def check_errors(device, gprs=False, sip=False, service=False):
     if not service:
-        services = ["osmo-nitb.service", trxService, "osmo-bts-trx.service"]
+        services = ["osmo-nitb2.service", trxService, "osmo-bts-trx2.service"]
         if gprs:
-            services += ["osmo-pcu.service", "osmo-ggsn.service", "osmo-sgsn.service"]
+            services += ["osmo-pcu2.service", "osmo-ggsn2.service", "osmo-sgsn2.service"]
         if sip:
-            services += ["osmo-sip-connector"]
+            services += ["osmo-sip-connector2.service"]
     else:
         services = [service]
 
