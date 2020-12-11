@@ -154,7 +154,6 @@ def stop_services(device, log=False):
 
 
 def check_errors(device, gprs=False, sip=False, service=False):
-    print("Check Errors")
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     trxService, trxConfig = config_trx(device)
     
