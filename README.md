@@ -1,25 +1,25 @@
 
 ![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/help.png)
 
-### RougeBTS
+### RougeBTS Fork For DragonOS
 
- This project is created for easy deployment of Osmocom GSM stack and convenient interaction with users
+This project was forked from DrLafa to work specifically on the DragonOS distro. This was created for easy deployment of Osmocom GSM stack and convenient interaction with users
 
   - E(GPRS) support
   - Asterisk support
-  - monitoring online subscribers
-  - automatic interaction with new users, like sms, ussd or call
-  - manual interaction with individual users
+  - Monitoring online subscribers
+  - Automatic interaction with new users, like sms, ussd or call
+  - Manual interaction with individual users
   - USSD-broadcast
   - SMS-broadcast
-  - SMS-spam ;)
+  - SMS-spam >:D
 
 
 ![](https://raw.githubusercontent.com/DrLafa/osmo-nitb-scripts/master/doc/img/RougeBTS.png)
 
-All software was tested on [LimeSDR-Mini + Orange Pi Zero](https://codeby.net/threads/miniatjurnaja-sotovaja-stancija-na-baze-limesdr-mini-i-orange-pi-zero.66747/) with Armbian Bionic. Also with Debian 10
+Software was tested on [LimeSDR-Mini + Orange Pi Zero](https://codeby.net/threads/miniatjurnaja-sotovaja-stancija-na-baze-limesdr-mini-i-orange-pi-zero.66747/) with Armbian Bionic and Debian 10. Forked version tested with USRP B210 on DragonOS. 
 
-### Installation
+### Installation (Not Required For DragonOS)
 Installing LimeSuite
 ```
 apt install git g++ cmake libsqlite3-dev libi2c-dev libusb-1.0-0-dev
@@ -33,6 +33,12 @@ sudo ldconfig
 cd ../udev-rules/
 sudo sh LimeSuite/udev-rules/install.sh
 cd ~/
+```
+Installing UHD
+```
+sudo add-apt-repository ppa:ettusresearch/uhd
+sudo apt-get update
+apt install libuhd-dev libuhd003 uhd-host
 ```
 Adding the Osmocom repository
 ```
@@ -95,22 +101,22 @@ For easy setup of user-interactivity you can use config.json
 {
    "scripts":{
       "sms":{
-         "enabled": false,
-         "sender_extension": "John Connor",
+         "enabled": true,
+         "sender_extension": "DragonOS",
          "message":[
-            "If you are reading this, then you are resistance"
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "ussd":{
          "enabled": false,
          "ussd_type": 1,
          "message":[
-            "Welcome to our l33t hax0r network.",
-            "If you are reading this, then you are true L33T 1337 H4xXx0r"
+            "Welcome to DragonOS!",
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "call":{
-         "enabled": true,
+         "enabled": false,
          "caller_extension": 666,
          "voice-file": "tt-monkeys"
       }

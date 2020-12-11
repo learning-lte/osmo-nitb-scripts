@@ -1,22 +1,22 @@
 {
    "scripts":{
       "sms":{
-         "enabled": false,
-         "sender_extension": "John Connor",
+         "enabled": true,
+         "sender_extension": "DragonOS",
          "message":[
-            "If you are reading this, then you are resistance"
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "ussd":{
          "enabled": false,
          "ussd_type": 1,
          "message":[
-            "Welcome to Test.",
-            "If you are reading this, then you are true L33T 1337 H4xXx0r"
+            "Welcome to DragonOS!",
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "call":{
-         "enabled": true,
+         "enabled": false,
          "caller_extension": 666,
          "voice-file": "tt-monkeys"
       }
