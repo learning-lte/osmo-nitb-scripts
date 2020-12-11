@@ -116,7 +116,15 @@ def run(gprs, sip):
         check_errors(service=service)
 
 
-def stop_services(log=False):
+def stop_services(device, log=False):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    if(device == "LIME"):
+        trxService = "osmo-trx-lms.service"
+    elif(device == "UHD"):    
+        trxService = "osmo-trx-uhd.service"
+    else:
+        exit(1)
+
     services = ["osmocom-nitb.service",
                 "osmo-nitb.service",
                 trxService,
@@ -138,7 +146,7 @@ def stop_services(log=False):
             subprocess.call(["systemctl", "stop", service])
 
 
-def check_errors(gprs=False, sip=False, service=False):
+def check_errors(device, gprs=False, sip=False, service=False):
     if not service:
         services = ["osmo-nitb.service", trxService, "osmo-bts-trx.service"]
         if gprs:
@@ -163,7 +171,7 @@ def check_errors(gprs=False, sip=False, service=False):
                     service,
                    "{0}:{1}:{2}".format(date.hour, date.minute, date.second))
                   )
-            stop_services()
+            stop_services(device)
             exit(1)
 
 
@@ -210,7 +218,7 @@ if __name__ == "__main__" and check_root():
     configure(gprs, device, sip, interface)
 
     run(gprs, sip)
-    check_errors()
+    check_errors(device)
     db = HLR.Database(hlr_path)
     print("[+] Done")
     time.sleep(3)
