@@ -4,12 +4,13 @@ import subprocess
 import time
 import datetime
 import signal
+from functools import partial
 from scripts import HLR, user_interact, monitor
 import argparse
 
-def signal_handler(sig, frame):
+def signal_handler(device, sig, frame):
     print('\x1bc')
-    stop_services(log=True)
+    stop_services(device, log=True)
     if os.path.exists("/var/lib/osmocom/hlr.sqlite3"):
         os.remove("/var/lib/osmocom/hlr.sqlite3")
 
@@ -26,7 +27,7 @@ def check_root():
     else:
         return True
 
-def sdr_check():
+def sdr_check(device):
     print("[*] Checking for " + device + " device..")
 
     ## IF LIMESDR
@@ -52,16 +53,13 @@ def sdr_check():
         else:
             print("[-] Not devices found, exiting...")
             exit(1)
-
     else:
         print("Device not found, exiting...")
         exit(1)
 
-#configure osmocom, systemctl and asterisk
-def configure(gprs, sip, interface, config_path="/etc/osmocom2"):
+#Configure helper script, returns which TRX Service and Config
+def config_trx(device):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
-    global trxService
-    global trxConfig
     if(device == "LIME"):
         trxService = "osmo-trx-lms2.service"
         trxConfig = "osmo-trx-lms.cfg"
@@ -71,8 +69,16 @@ def configure(gprs, sip, interface, config_path="/etc/osmocom2"):
     else:
         exit(1)
 
+    return trxService, trxConfig
+
+
+#configure osmocom, systemctl and asterisk
+def configure(device, gprs, sip, interface, config_path="/etc/osmocom2"):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    trxService, trxConfig = config_trx(device)
+
     # stopping osmocom services, if they a running
-    stop_services()
+    stop_services(device)
 
     if not os.path.exists(config_path):
         os.makedirs(config_path)
@@ -106,7 +112,10 @@ def configure(gprs, sip, interface, config_path="/etc/osmocom2"):
     subprocess.call("systemctl daemon-reload", shell=True)
 
 
-def run(gprs, sip):
+def run(device, gprs, sip):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    trxService, trxConfig = config_trx(device)
+    
     services = ["osmo-nitb2.service", trxService, "osmo-bts-trx2.service"]
     if gprs:
         services += ["osmo-pcu2.service", "osmo-ggsn2.service", "osmo-sgsn2.service"]
@@ -117,10 +126,12 @@ def run(gprs, sip):
         print("[+] starting {0} ...".format(service))
         subprocess.call("systemctl start {0}".format(service), shell=True)
 
-        check_errors(service=service)
+        check_errors(device, service=service)
 
 
-def stop_services(log=False):
+def stop_services(device, log=False):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    trxService, trxConfig = config_trx(device)
 
     services = ["osmo-nitb2.service",
                 trxService,
@@ -142,7 +153,10 @@ def stop_services(log=False):
             subprocess.call(["systemctl", "stop", service])
 
 
-def check_errors(gprs=False, sip=False, service=False):
+def check_errors(device, gprs=False, sip=False, service=False):
+    ## CHECK TO SEE IF WE'RE USING LIME OR UHD
+    trxService, trxConfig = config_trx(device)
+    
     if not service:
         services = ["osmo-nitb2.service", trxService, "osmo-bts-trx2.service"]
         if gprs:
@@ -155,19 +169,13 @@ def check_errors(gprs=False, sip=False, service=False):
     date = datetime.datetime.now()
 
     for service in services:
-        #s = subprocess.Popen(["journalctl", "-b", "-S",
-        #                         "{0}:{1}:{2}".format(date.hour, date.minute, date.second),
-        #                         "-u", service], stdout=subprocess.PIPE).communicate()[0]
-
-        #print(s.decode())
-        #if b"Failed with result 'exit-code'" in s:
         status = subprocess.Popen(["systemctl", "status", service], stdout=subprocess.PIPE).communicate()[0]
         if not b"active (running)" in status:
             print( "Somethigs wrong with {0}, see journalctl -b -S {1} -u {0}".format(
                     service,
                    "{0}:{1}:{2}".format(date.hour, date.minute, date.second))
                   )
-            stop_services()
+            stop_services(device)
             exit(1)
 
 
@@ -207,16 +215,16 @@ if __name__ == "__main__" and check_root():
     interface = args.interface
     sip = args.sip
     
-    global device
+    #global device
     device = args.device.upper()
 
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, partial(signal_handler, device))
 
-    sdr_check()
-    configure(gprs, sip, interface)
+    sdr_check(device)
+    configure(device, gprs, sip, interface)
 
-    run(gprs, sip)
-    check_errors()
+    run(device, gprs, sip)
+    check_errors(device)
     db = HLR.Database(hlr_path)
     print("[+] Done")
     time.sleep(3)
@@ -229,5 +237,5 @@ if __name__ == "__main__" and check_root():
                 user_interact.interact(config, extension)
 
         monitor.update_monitor(db.get_subscribers())
-        check_errors()
+        check_errors(device)
         time.sleep(1)
