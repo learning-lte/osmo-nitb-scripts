@@ -104,7 +104,7 @@ def configure(device, gprs, sip, interface, config_path="/etc/osmocom2"):
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb_sip2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/extensions.conf", "/etc/asterisk/extensions.conf"), shell=True)
-        subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/sip.conf", "/etc/asterisk/sip.conf"), shell=True)
+        subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/sip.conf", "/etc/asterisk/sip.osmo-bts-trx2.serviceconf"), shell=True)
     else:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
 
@@ -154,6 +154,7 @@ def stop_services(device, log=False):
 
 
 def check_errors(device, gprs=False, sip=False, service=False):
+    print("Check Errors")
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     trxService, trxConfig = config_trx(device)
     
@@ -200,8 +201,8 @@ if __name__ == "__main__" and check_root():
     parser.add_argument("--gprs", action="store_true", default=False,
                         help="Enable E(GPRS) support. (Default=False)")
 
-    parser.add_argument("-i", default="wlan0", dest="interface",
-                        help="Interface to routing E(GPRS). (Default=wlan0)")
+    parser.add_argument("-i", default="wlp1s0", dest="interface",
+                        help="Interface to routing E(GPRS). (Default=wlp1s0)")
 
     parser.add_argument("--sip", action="store_true", default=False,
                         help="Enable sip (Asterisk) support. (Default=False)")
