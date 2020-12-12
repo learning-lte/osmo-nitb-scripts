@@ -4,7 +4,7 @@ import sqlite3
 import sys
 
 imsi = 999999999999999
-HLR_DATABASE = "configs/hlr.sqlite3"
+HLR_DATABASE = "/var/lib/osmocom/hlr.sqlite3"
 
 def check_extension(extension):
     conn.write(b"show subscriber extension %s\n" % extension)
@@ -42,6 +42,7 @@ def get_users():
         yield subscriber[0]
 
 def send_sms(id, extension, message):
+    print("Sending SMS to ID:" + str(id) + " From:" + extension + " " + message)
     conn.write(b"subscriber id %d sms sender extension %s send %s\n" % (id, extension, message))
     res = conn.read_until(b"OpenBSC> ")
     if b"%" in res:

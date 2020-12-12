@@ -2,17 +2,17 @@
    "scripts":{
       "sms":{
          "enabled": true,
-         "sender_extension": "John Connor",
+         "sender_extension": "DragonOS",
          "message":[
-            "If you are reading this, then you are resistance"
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "ussd":{
          "enabled": false,
          "ussd_type": 1,
          "message":[
-            "Welcome to our l33t hax0r network.",
-            "If you are reading this, then you are true L33T 1337 H4xXx0r"
+            "Welcome to DragonOS!",
+            "If you are reading this, you are on the DragonOS BTS Network"
          ]
       },
       "call":{
