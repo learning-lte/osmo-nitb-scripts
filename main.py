@@ -73,6 +73,7 @@ def config_trx(device):
 
 
 #configure osmocom, systemctl and asterisk
+
 def configure(device, gprs, sip, interface, config_path="/etc/osmocom2"):
     ## CHECK TO SEE IF WE'RE USING LIME OR UHD
     trxService, trxConfig = config_trx(device)
