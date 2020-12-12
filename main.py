@@ -105,7 +105,7 @@ def configure(device, gprs, sip, interface, config_path="/etc/osmocom2"):
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb_sip2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/extensions.conf", "/etc/asterisk/extensions.conf"), shell=True)
-        subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/sip.conf", "/etc/asterisk/sip.osmo-bts-trx2.serviceconf"), shell=True)
+        subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/sip.conf", "/etc/asterisk/sip.conf"), shell=True)
     else:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/services/osmo-nitb2.service", "/lib/systemd/system/osmo-nitb2.service"), shell=True)
 
