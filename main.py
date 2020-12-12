@@ -99,7 +99,7 @@ def configure(device, gprs, sip, interface, config_path="/etc/osmocom2"):
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-ggsn.cfg", config_path+"/osmo-ggsn.cfg"), shell=True)
 
     subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-bts.cfg", config_path+"/osmo-bts-trx.cfg"), shell=True)
-    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-trx.cfg", config_path + "/" + trxConfig), shell=True)
+    subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/" + trxConfig, config_path + "/" + trxConfig), shell=True)
 
     if sip:
         subprocess.call("cp -f {0} {1}".format(app_dir+"/configs/osmo-sip-connector.cfg", config_path+"/osmo-sip-connector.cfg"), shell=True)
