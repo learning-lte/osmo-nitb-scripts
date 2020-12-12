@@ -1,7 +1,7 @@
 {
    "scripts":{
       "sms":{
-         "enabled": false,
+         "enabled": true,
          "sender_extension": "DragonOS",
          "message":[
             "If you are reading this, you are on the DragonOS BTS Network"
@@ -16,8 +16,8 @@
          ]
       },
       "call":{
-         "enabled": true,
-         "caller_extension": 666,
+         "enabled": false,
+         "caller_extension": "DragonOS",
          "voice-file": "tt-monkeys"
       }
    }
